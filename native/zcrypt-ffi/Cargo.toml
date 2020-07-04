@@ -1,0 +1,16 @@
+[package]
+authors = ["Ogbonda Chiziaruhoma<chiziaruhoma@gmail.com>"]
+edition = "2018"
+name = "zcrypt-ffi"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+name = "zcrypt_ffi"
+
+[dependencies]
+zcrypt = {path = "../zcrypt"}
+
+[build-dependencies]
+cbindgen = "0.14.3"
+dart-bindgen = "0.1"
