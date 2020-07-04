@@ -1,0 +1,67 @@
+[env]
+ANDROID_PLATFORM_VERSION = "28"
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
+CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/zcrypt-ffi"]
+
+[tasks.test-flow]
+disabled = true
+
+[tasks.build]
+args = ["build", "--all-features"]
+category = "Build"
+command = "cargo"
+dependencies = ["ios", "post-ios", "post-macos"]
+description = "Runs the rust compiler."
+
+[tasks.build.mac]
+args = ["build", "--all-features"]
+category = "Build"
+command = "cargo"
+dependencies = ["ios", "post-ios", "post-macos"]
+description = "Runs the rust compiler."
+
+[tasks.ios]
+args = ["lipo"]
+category = "Build"
+command = "cargo"
+condition = {platforms = ["mac"]}
+description = "Build ios targets."
+
+[tasks.macos]
+args = ["lipo"]
+category = "Build"
+command = "cargo"
+condition = {platforms = ["mac"]}
+description = "Build Macos targets."
+
+[tasks.post-ios]
+condition = {platforms = ["mac"]}
+script = [
+  """
+  echo ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/binding.h
+  """,
+  """
+    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/universal/debug/lib${CARGO_MAKE_CRATE_FS_NAME}.a \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/${CARGO_MAKE_CRATE_FS_NAME}/ios/lib${CARGO_MAKE_CRATE_FS_NAME}.a
+    """,
+  """
+     rm -f ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/${CARGO_MAKE_CRATE_FS_NAME}/ios/Classes/binding.h
+    """,
+  """
+    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/binding.h \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/${CARGO_MAKE_CRATE_FS_NAME}/ios/Classes/binding.h
+    """,
+]
+
+[tasks.post-macos]
+condition = {platforms = ["mac"]}
+script = [
+  """
+    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/${CARGO_MAKE_CRATE_FS_NAME}/macos/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    """,
+    """
+    echo ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/${CARGO_MAKE_CRATE_FS_NAME}/macos/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    """
+]
+script_runner = "@duckscript"
