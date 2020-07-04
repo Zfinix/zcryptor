@@ -1,0 +1,3 @@
+[submodule "native/zcrypt-ffi"]
+	path = native/zcrypt-ffi
+	url = https://github.com/Zfinix/zcryptor
